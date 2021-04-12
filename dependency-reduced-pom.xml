@@ -107,12 +107,26 @@
       <name>bintray</name>
       <url>https://dl.bintray.com/dv8fromtheworld/maven</url>
     </repository>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+    <repository>
+      <id>ess-repo</id>
+      <url>https://ci.ender.zone/plugin/repository/everything</url>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
       <version>1.16.3-R0.1-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.ess3</groupId>
+      <artifactId>EssentialsX</artifactId>
+      <version>2.18.1</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

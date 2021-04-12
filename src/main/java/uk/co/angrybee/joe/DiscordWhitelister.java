@@ -1,10 +1,12 @@
 package uk.co.angrybee.joe;
 
+import com.earth2me.essentials.Essentials;
 import org.bukkit.Server;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import uk.co.angrybee.joe.Commands.CommandAbout;
 import uk.co.angrybee.joe.Commands.CommandReload;
@@ -12,7 +14,9 @@ import uk.co.angrybee.joe.Commands.CommandStatus;
 import uk.co.angrybee.joe.Configs.CustomMessagesConfig;
 import uk.co.angrybee.joe.Configs.CustomPrefixConfig;
 import uk.co.angrybee.joe.Configs.MainConfig;
+import uk.co.angrybee.joe.Events.EssentialsVanishEvents;
 import uk.co.angrybee.joe.Events.JoinLeaveEvents;
+import uk.co.angrybee.joe.Events.SuperVanishEvents;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,8 +31,10 @@ public class DiscordWhitelister extends JavaPlugin
     private static FileConfiguration userList;
     private static FileConfiguration removedList;
 
-    // easy whitelist
+    // Plugins
     public static Plugin easyWhitelist;
+    public static Essentials essentialsPlugin;
+    public static boolean hasSuperVanishOrPremiumVanish;
 
     public static String botToken;
 
@@ -59,6 +65,11 @@ public class DiscordWhitelister extends JavaPlugin
         thisPlugin = this;
         thisServer = thisPlugin.getServer();
         pluginLogger = thisPlugin.getLogger();
+
+        // Get/check for plugin
+        PluginManager pluginManager = getServer().getPluginManager();
+        essentialsPlugin = (Essentials) pluginManager.getPlugin("Essentials");
+        hasSuperVanishOrPremiumVanish = pluginManager.getPlugin("SuperVanish") != null || pluginManager.getPlugin("PremiumVanish") != null;
 
         int initSuccess = InitBot(true);
 
@@ -225,8 +236,19 @@ public class DiscordWhitelister extends JavaPlugin
             // Only attempt to set player count if the bot successfully initialized
             if(getWhitelisterBotConfig().getBoolean("show-player-count"))
             {
-                // Register events if enabled
-                thisServer.getPluginManager().registerEvents(new JoinLeaveEvents(), thisPlugin);
+                if(firstInit) {
+                    // Register events if enabled
+                    thisServer.getPluginManager().registerEvents(new JoinLeaveEvents(), thisPlugin);
+                    pluginLogger.info("Registered join/leave events!");
+                    if (hasSuperVanishOrPremiumVanish) {
+                        thisServer.getPluginManager().registerEvents(new SuperVanishEvents(), thisPlugin);
+                        pluginLogger.info("Registered SuperVanish events!");
+                    }
+                    if (essentialsPlugin != null) {
+                        thisServer.getPluginManager().registerEvents(new EssentialsVanishEvents(), thisPlugin);
+                        pluginLogger.info("Registered Essentials vanish events!");
+                    }
+                }
 
                 // Set initial player count
                 DiscordClient.SetPlayerCountStatus(getOnlineUsers());
