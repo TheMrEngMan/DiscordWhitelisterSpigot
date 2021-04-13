@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.kitteh.vanish.VanishPlugin;
 import uk.co.angrybee.joe.Commands.CommandAbout;
 import uk.co.angrybee.joe.Commands.CommandReload;
 import uk.co.angrybee.joe.Commands.CommandStatus;
@@ -17,6 +18,7 @@ import uk.co.angrybee.joe.Configs.MainConfig;
 import uk.co.angrybee.joe.Events.EssentialsVanishEvents;
 import uk.co.angrybee.joe.Events.JoinLeaveEvents;
 import uk.co.angrybee.joe.Events.SuperVanishEvents;
+import uk.co.angrybee.joe.Events.VanishNoPacketEvents;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +36,7 @@ public class DiscordWhitelister extends JavaPlugin
     // Plugins
     public static Plugin easyWhitelist;
     public static Essentials essentialsPlugin;
+    public static VanishPlugin vanishNoPacketPlugin;
     public static boolean hasSuperVanishOrPremiumVanish;
 
     public static String botToken;
@@ -69,6 +72,7 @@ public class DiscordWhitelister extends JavaPlugin
         // Get/check for plugin
         PluginManager pluginManager = getServer().getPluginManager();
         essentialsPlugin = (Essentials) pluginManager.getPlugin("Essentials");
+        vanishNoPacketPlugin = (VanishPlugin) pluginManager.getPlugin("VanishNoPacket");
         hasSuperVanishOrPremiumVanish = pluginManager.getPlugin("SuperVanish") != null || pluginManager.getPlugin("PremiumVanish") != null;
 
         int initSuccess = InitBot(true);
@@ -239,14 +243,18 @@ public class DiscordWhitelister extends JavaPlugin
                 if(firstInit) {
                     // Register events if enabled
                     thisServer.getPluginManager().registerEvents(new JoinLeaveEvents(), thisPlugin);
-                    pluginLogger.info("Registered join/leave events!");
+                    //pluginLogger.info("Registered join/leave events!");
                     if (hasSuperVanishOrPremiumVanish) {
                         thisServer.getPluginManager().registerEvents(new SuperVanishEvents(), thisPlugin);
-                        pluginLogger.info("Registered SuperVanish events!");
+                        //pluginLogger.info("Registered SuperVanish events!");
+                    }
+                    if(vanishNoPacketPlugin != null) {
+                        thisServer.getPluginManager().registerEvents(new VanishNoPacketEvents(), thisPlugin);
+                        //pluginLogger.info("Registered VanishNoPacket events!");
                     }
                     if (essentialsPlugin != null) {
                         thisServer.getPluginManager().registerEvents(new EssentialsVanishEvents(), thisPlugin);
-                        pluginLogger.info("Registered Essentials vanish events!");
+                        //pluginLogger.info("Registered Essentials vanish events!");
                     }
                 }
 

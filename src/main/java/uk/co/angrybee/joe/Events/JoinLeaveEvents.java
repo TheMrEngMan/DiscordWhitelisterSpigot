@@ -1,6 +1,7 @@
 package uk.co.angrybee.joe.Events;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventPriority;
 import uk.co.angrybee.joe.DiscordWhitelister;
 import uk.co.angrybee.joe.DiscordClient;
 
@@ -13,7 +14,7 @@ import uk.co.angrybee.joe.Utils;
 // Used for showing player count in the discord bots status
 public class JoinLeaveEvents implements Listener
 {
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event)
     {
         Player player = event.getPlayer();
@@ -29,7 +30,7 @@ public class JoinLeaveEvents implements Listener
         DiscordClient.SetPlayerCountStatus(DiscordWhitelister.getOnlineUsers());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerLeave(PlayerQuitEvent event)
     {
         Player player = event.getPlayer();
